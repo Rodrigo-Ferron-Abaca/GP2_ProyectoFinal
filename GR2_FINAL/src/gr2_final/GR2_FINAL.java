@@ -28,9 +28,9 @@ public class GR2_FINAL {
         Connection con = Conexion.getConexion();
     }
     
-        /*Cliente cl = new Cliente (37132982, "Kevin Orozco", "4335533", 32, "escoliosis lumbar", true);
+       /* Cliente cl = new Cliente (37132982, "Kevin Orozco", "4335533", 32, "escoliosis lumbar", true);
         ClienteData clienteData = new ClienteData();
-        clienteData.(cl);
+        clienteData.guardarCliente(cl);
 */
         
         
