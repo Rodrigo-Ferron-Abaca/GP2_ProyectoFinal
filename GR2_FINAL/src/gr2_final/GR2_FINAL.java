@@ -5,16 +5,13 @@
  */
 package gr2_final;
 
-
 import gr2_final.accesoadatos.ClienteData;
-import gr2_final.entidades.Cliente;
-import gr2_final.accesoadatos.Conexion;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-
-
+import gr2_final.accesoadatos.Conexion;
+import gr2_final.entidades.Cliente;
 /**
  *
  * @author rodrigo
@@ -26,12 +23,10 @@ public class GR2_FINAL {
      */
     public static void main(String[] args) {
         Connection con = Conexion.getConexion();
-    }
-    
-       /* Cliente cl = new Cliente (37132982, "Kevin Orozco", "4335533", 32, "escoliosis lumbar", true);
+        
+        Cliente cl = new Cliente (37132982, "Kevin Orozco", "4335533", 32, "escoliosis lumbar", true);
         ClienteData clienteData = new ClienteData();
         clienteData.guardarCliente(cl);
-*/
-        
-        
+    }
+    
 }

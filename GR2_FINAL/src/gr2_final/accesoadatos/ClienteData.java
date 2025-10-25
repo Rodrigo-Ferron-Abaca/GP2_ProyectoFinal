@@ -45,9 +45,9 @@ public class ClienteData {
             ResultSet rs = preparedStatement.getGeneratedKeys();
             if (rs.next()) {
                 cliente.setCodCli(rs.getInt(1));
-                JOptionPane.showMessageDialog(null, "Se agrego el cliente con codigo: " + cliente.getCodCli());
+                JOptionPane.showMessageDialog(null, "Se agregó el cliente con código: " + cliente.getCodCli());
             } else {
-                JOptionPane.showMessageDialog(null, "No se pudo obtener el codigo del cliente.");
+                JOptionPane.showMessageDialog(null, "No se pudo obtener el código del cliente.");
             }
             preparedStatement.close();
         } catch (SQLException e) {
