@@ -177,7 +177,48 @@ public class ClienteData {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al realizar el borrado lógico del cliente: " + e.getMessage());
         }
-    } 
+    }
+    //agregado tambien
+    public void altaLogicaCliente(int codCli) { 
+    String query = "UPDATE cliente SET estado = true WHERE codCli = ?";
+
+    try {
+        PreparedStatement ps = con.prepareStatement(query);
+        ps.setInt(1, codCli); 
+        
+        int filasModificadas = ps.executeUpdate();
+        
+        if (filasModificadas > 0) {
+            JOptionPane.showMessageDialog(null, "El cliente fue dado de alta correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro el cliente con el codigo proporcionado.");
+        }
+        ps.close();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al realizar el alta logica del cliente: " + e.getMessage());
+    }
+}
+    
+    
+    //faltaba este metodo chicos
+    public void borrarCliente(int codCli) {
+    String sql = "DELETE FROM cliente WHERE codCli = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, codCli);
+        
+        int filas = ps.executeUpdate();
+
+        if (filas > 0) {
+            JOptionPane.showMessageDialog(null, "Cliente eliminado correctamente de la base de datos.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro ningun cliente con ese codigo.");
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar el cliente: " + e.getMessage());
+    }
+}
 
     public Cliente buscarClientePorId(int codCli) { 
         return buscarClientePorCod(codCli);
