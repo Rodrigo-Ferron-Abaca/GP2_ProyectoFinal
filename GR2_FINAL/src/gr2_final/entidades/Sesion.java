@@ -18,11 +18,11 @@ public class Sesion {
     private Tratamiento codigoTratam;
     private Consultorio nroConsutorio;
     private Masajista matricula;
-
+    private DiaDeSpa codPack;
     public Sesion() {
     }
 
-    public Sesion(int codSesion, LocalDate fechaHoraInicio, LocalDate fechaHoraFin, boolean estado, Tratamiento codigoTratam, Consultorio nroConsutorio, Masajista matricula) {
+    public Sesion(int codSesion, LocalDate fechaHoraInicio, LocalDate fechaHoraFin, boolean estado, Tratamiento codigoTratam, Consultorio nroConsutorio, Masajista matricula, DiaDeSpa codPack) {
         this.codSesion = codSesion;
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
@@ -30,6 +30,7 @@ public class Sesion {
         this.codigoTratam = codigoTratam;
         this.nroConsutorio = nroConsutorio;
         this.matricula = matricula;
+        this.codPack = codPack;
     }
 
     public int getCodSesion() {
@@ -87,11 +88,18 @@ public class Sesion {
     public void setMatricula(Masajista matricula) {
         this.matricula = matricula;
     }
+    
+    // NUEVOS GETTER Y SETTER
+    public DiaDeSpa getCodPack() {
+        return codPack;
+    }
+
+    public void setCodPack(DiaDeSpa codPack) {
+        this.codPack = codPack;
+    }
 
     @Override
     public String toString() {
-        return "Sesion{" + "codSesion=" + codSesion + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", estado=" + estado + ", codigoTratam=" + codigoTratam + ", nroConsutorio=" + nroConsutorio + ", matricula=" + matricula + '}';
-    }
-    
-    
+        return "Sesion{" + "codSesion=" + codSesion + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", estado=" + estado + ", codigoTratam=" + codigoTratam + ", nroConsutorio=" + nroConsutorio + ", matricula=" + matricula + ", codPack=" + codPack + '}';
+    } 
 }

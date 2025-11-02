@@ -11,6 +11,7 @@ import java.time.LocalDate;
  * @author KEVIN
  */
 public class DiaDeSpa {
+
     private int codPack;
     private LocalDate fechaHora;
     private String preferencias;
@@ -23,6 +24,14 @@ public class DiaDeSpa {
 
     public DiaDeSpa(int codPack, LocalDate fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
         this.codPack = codPack;
+        this.fechaHora = fechaHora;
+        this.preferencias = preferencias;
+        this.monto = monto;
+        this.estado = estado;
+        this.codCli = codCli;
+    }
+
+    public DiaDeSpa(LocalDate fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
         this.fechaHora = fechaHora;
         this.preferencias = preferencias;
         this.monto = monto;
@@ -83,9 +92,4 @@ public class DiaDeSpa {
         return "DiaDeSpa{" + "codPack=" + codPack + ", fechaHora=" + fechaHora + ", preferencias=" + preferencias + ", monto=" + monto + ", estado=" + estado + ", codCli=" + codCli + '}';
     }
 
-    
-    
-    
-    
-    
 }

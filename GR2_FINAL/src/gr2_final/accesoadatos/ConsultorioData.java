@@ -18,11 +18,13 @@ import javax.swing.JOptionPane;
  * @author KEVIN
  */
 public class ConsultorioData {
+
     private Connection con = null;
 
     public ConsultorioData() {
         con = Conexion.getConexion();
     }
+
     // para guardar
     public void guardarConsultorio(Consultorio c) {
         String sql = "INSERT INTO consultorio (nroConsultorio, usos, equipamiento, apto) VALUES (?, ?, ?, ?)";
@@ -40,6 +42,7 @@ public class ConsultorioData {
             JOptionPane.showMessageDialog(null, "Error al guardar consultorio: " + e.getMessage());
         }
     }
+
     // busca por nro
     public Consultorio buscarConsultorio(int nroConsultorio) {
         Consultorio c = null;
@@ -64,6 +67,7 @@ public class ConsultorioData {
         }
         return c;
     }
+
     // lista de solo aptos
     public List<Consultorio> listarConsultoriosAptos() {
         List<Consultorio> lista = new ArrayList<>();
@@ -86,6 +90,7 @@ public class ConsultorioData {
         }
         return lista;
     }
+
     // para modificar
     public void modificarConsultorio(Consultorio c) {
         String sql = "UPDATE consultorio SET usos = ?, equipamiento = ?, apto = ? WHERE nroConsultorio = ?";
@@ -105,7 +110,8 @@ public class ConsultorioData {
             JOptionPane.showMessageDialog(null, "Error al modificar consultorio: " + e.getMessage());
         }
     }
-     // para dar de baja logica
+    // para dar de baja logica
+
     public void bajaLogicaConsultorio(int nroConsultorio) {
         String sql = "UPDATE consultorio SET apto = false WHERE nroConsultorio = ?";
         try {
@@ -121,6 +127,7 @@ public class ConsultorioData {
             JOptionPane.showMessageDialog(null, "Error en baja logica: " + e.getMessage());
         }
     }
+
     // para dar de alta logica
     public void altaLogicaConsultorio(int nroConsultorio) {
         String sql = "UPDATE consultorio SET apto = true WHERE nroConsultorio = ?";
@@ -137,7 +144,8 @@ public class ConsultorioData {
             JOptionPane.showMessageDialog(null, "Error en alta logica: " + e.getMessage());
         }
     }
-     // Para borrarlo para siempreeee
+    // Para borrarlo para siempreeee
+
     public void borrarConsultorio(int nroConsultorio) {
         String sql = "DELETE FROM consultorio WHERE nroConsultorio = ?";
         try {
@@ -152,5 +160,57 @@ public class ConsultorioData {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al borrar consultorio: " + e.getMessage());
         }
+    }
+
+    public List<Consultorio> listarConsultorios() {
+        List<Consultorio> consultorios = new ArrayList<>();
+        String sql = "SELECT * FROM consultorio WHERE apto = 1";
+
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Consultorio c = new Consultorio();
+                c.setNroConsultorio(rs.getInt("nroConsultorio"));
+                c.setUsos(rs.getString("usos"));
+                c.setEquipamiento(rs.getString("equipamiento"));
+                c.setApto(rs.getBoolean("apto"));
+                consultorios.add(c);
+            }
+
+            ps.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al listar consultorios: " + ex.getMessage());
+        }
+
+        return consultorios;
+    }
+
+    public Consultorio buscarConsultorioPorNumero(int nro) {
+        Consultorio c = null;
+        String sql = "SELECT * FROM consultorio WHERE nroConsultorio = ?";
+
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, nro);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                c = new Consultorio();
+                c.setNroConsultorio(rs.getInt("nroConsultorio"));
+                c.setUsos(rs.getString("usos"));
+                c.setEquipamiento(rs.getString("equipamiento"));
+                c.setApto(rs.getBoolean("apto"));
+            }
+
+            ps.close();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al buscar consultorio: " + ex.getMessage());
+        }
+
+        return c;
     }
 }

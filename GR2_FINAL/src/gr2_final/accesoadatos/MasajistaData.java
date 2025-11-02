@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -18,12 +19,14 @@ import javax.swing.JOptionPane;
  * @author KEVIN
  */
 public class MasajistaData {
+
     private Connection con = null;
 
     public MasajistaData() {
         con = Conexion.getConexion();
-            
+
     }
+
     // guarda masajista
     public void guardarMasajista(Masajista m) {
         String sql = "INSERT INTO masajista (matricula, nombreCompleto, telefono, especialidad, estado) VALUES (?, ?, ?, ?, ?)";
@@ -42,6 +45,7 @@ public class MasajistaData {
             JOptionPane.showMessageDialog(null, "Error al guardar masajista: " + e.getMessage());
         }
     }
+
     // busca por matricula
     public Masajista buscarMasajista(int matricula) {
         Masajista m = null;
@@ -67,6 +71,7 @@ public class MasajistaData {
         }
         return m;
     }
+
     // hace lista de activos
     public List<Masajista> listarMasajistasActivos() {
         List<Masajista> lista = new ArrayList<>();
@@ -90,6 +95,7 @@ public class MasajistaData {
         }
         return lista;
     }
+
     // para modificar
     public void modificarMasajista(Masajista m) {
         String sql = "UPDATE masajista SET nombreCompleto = ?, telefono = ?, especialidad = ?, estado = ? WHERE matricula = ?";
@@ -110,6 +116,7 @@ public class MasajistaData {
             JOptionPane.showMessageDialog(null, "Error al modificar masajista: " + e.getMessage());
         }
     }
+
     // para hacer la baja logica
     public void bajaLogicaMasajista(int matricula) {
         String sql = "UPDATE masajista SET estado = false WHERE matricula = ?";
@@ -126,6 +133,7 @@ public class MasajistaData {
             JOptionPane.showMessageDialog(null, "Error en baja logica: " + e.getMessage());
         }
     }
+
     // para dar de alta logica
     public void altaLogicaMasajista(int matricula) {
         String sql = "UPDATE masajista SET estado = true WHERE matricula = ?";
@@ -142,6 +150,7 @@ public class MasajistaData {
             JOptionPane.showMessageDialog(null, "Error en alta logica: " + e.getMessage());
         }
     }
+
     // para borrar definitivo
     public void borrarMasajista(int matricula) {
         String sql = "DELETE FROM masajista WHERE matricula = ?";
@@ -157,5 +166,56 @@ public class MasajistaData {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al borrar masajista: " + e.getMessage());
         }
+    }
+
+    public List<Masajista> listarMasajistasPorEspecialidad(String especialidad) {
+        List<Masajista> masajistas = new ArrayList<>();
+        String sql = "SELECT * FROM masajista WHERE especialidad = ? AND estado = 1";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, especialidad);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Masajista m = new Masajista();
+                m.setMatricula(rs.getInt("matricula"));
+                m.setNombreCompleto(rs.getString("nombreCompleto"));
+                m.setTelefono(rs.getString("telefono"));
+                m.setEspecialidad(rs.getString("especialidad"));
+                m.setEstado(rs.getBoolean("estado"));
+                masajistas.add(m);
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al listar masajistas por especialidad: " + ex.getMessage());
+        }
+        return masajistas;
+    }
+
+    public List<Masajista> listarMasajistasLibresEntre(Date inicio, Date fin) {
+        List<Masajista> libres = new ArrayList<>();
+        String sql = "SELECT * FROM masajista m WHERE m.estado = 1 AND m.matricula NOT IN ("
+                + "SELECT s.matricula FROM sesion s "
+                + "WHERE (s.fechaHoraInicio BETWEEN ? AND ?) OR (s.fechaHoraFin BETWEEN ? AND ?))";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setDate(1, new java.sql.Date(inicio.getTime()));
+            ps.setDate(2, new java.sql.Date(fin.getTime()));
+            ps.setDate(3, new java.sql.Date(inicio.getTime()));
+            ps.setDate(4, new java.sql.Date(fin.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Masajista m = new Masajista();
+                m.setMatricula(rs.getInt("matricula"));
+                m.setNombreCompleto(rs.getString("nombreCompleto"));
+                m.setTelefono(rs.getString("telefono"));
+                m.setEspecialidad(rs.getString("especialidad"));
+                m.setEstado(rs.getBoolean("estado"));
+                libres.add(m);
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al listar masajistas libres: " + ex.getMessage());
+        }
+        return libres;
     }
 }
