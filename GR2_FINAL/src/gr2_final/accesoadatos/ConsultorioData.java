@@ -188,7 +188,7 @@ public class ConsultorioData {
         return consultorios;
     }
 
-    public Consultorio buscarConsultorioPorNumero(int nro) {
+    /*public Consultorio buscarConsultorioPorNumero(int nro) {
         Consultorio c = null;
         String sql = "SELECT * FROM consultorio WHERE nroConsultorio = ?";
 
@@ -212,5 +212,5 @@ public class ConsultorioData {
         }
 
         return c;
-    }
+    }*/
 }
