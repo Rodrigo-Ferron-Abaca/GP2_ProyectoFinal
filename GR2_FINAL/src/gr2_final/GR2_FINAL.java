@@ -14,10 +14,12 @@ import gr2_final.accesoadatos.Conexion;
 import gr2_final.accesoadatos.ConsultorioData;
 import gr2_final.accesoadatos.DiaDeSpaData;
 import gr2_final.accesoadatos.InstalacionData;
+import gr2_final.accesoadatos.MasajistaData;
 import gr2_final.entidades.Cliente;
 import gr2_final.entidades.Consultorio;
 import gr2_final.entidades.DiaDeSpa;
 import gr2_final.entidades.Instalacion;
+import gr2_final.entidades.Masajista;
 import javax.swing.JOptionPane;
 
 /**
@@ -114,7 +116,7 @@ public class GR2_FINAL {
         for (DiaDeSpa dia : diaData.listarDiasDeSpaPorFecha(fecha)) {
             System.out.println(dia);
         }
-*/      //PRUEBAS CONSULTORIO 
+*/      //CONSULTAS CONSULTORIO 
         //Agregar Consultorio
         //Consultorio consu = new Consultorio (1,"masajes", "maquina de ralajacion", true);
         /*Consultorio consu1 = new Consultorio (2,"sauna", "sala de sauna", true);
@@ -169,7 +171,7 @@ public class GR2_FINAL {
         //consultorioData.altaLogicaConsultorio(1);
         //consultorioData.borrarConsultorio(2);
     
-        //PRUEBAS INSTALACION
+        //CONSULTAS INSTALACION
         //Agregar instalacion
         //Instalacion insta = new Instalacion (1,"sala central", "masoterapia",30000, true);
         /*Instalacion insta1 = new Instalacion (2,"sala VIP", "sauna",450000, true);
@@ -184,10 +186,124 @@ public class GR2_FINAL {
         }else{
             System.out.println("no se encontro instalacion");
     }*/
-        
-    }
+        //Listar instalaciones activas
+       /* InstalacionData instalacionData = new InstalacionData();
+        List<Instalacion> lista = instalacionData.listarInstalacionesActivas();
+
+    if (lista.isEmpty()) {
+        System.out.println("No hay instalaciones activas.");
+    } else {
+        System.out.println("Lista de instalaciones activas:\n");
+        for (Instalacion inst : lista) {
+            System.out.println("Codigo: " + inst.getCodInst());
+            System.out.println("Nombre: " + inst.getNombre());
+            System.out.println("Detalle de Uso: " + inst.getDetalleUso());
+            System.out.println("Precio por 30 min: $" + inst.getPrecio30m());
+            System.out.println("Estado: " + (inst.isEstado() ? "Activa" : "No Activa"));
+        }
+    }*/
+      //esto es para modificar la instalacion 
+     /*InstalacionData instalacionData = new InstalacionData();  
+     Instalacion inst = instalacionData.buscarInstalacion(1);
+
+    if (inst != null) {
+        System.out.println("Datos actuales:");
+        System.out.println("Código: " + inst.getCodInst());
+        System.out.println("Nombre: " + inst.getNombre());
+        System.out.println("Detalle: " + inst.getDetalleUso());
+        System.out.println("Precio 30m: " + inst.getPrecio30m());
+        System.out.println("Estado: " + inst.isEstado());
+       
+        // Modificamos 
+        inst.setNombre("Masajes Relajantes Premium");
+        inst.setDetalleUso("Sala destinada a masajes relajantes de alta calidad.");
+        inst.setPrecio30m(3500.00);
+        inst.setEstado(true); 
+
+        // realizamos la modificación en la base de datos
+        instalacionData.modificarInstalacion(inst);
+
+        System.out.println("Instalacion modificada con exito.");
+    } else {
+        System.out.println("No se encontro la instalacion.");
+    }*/
+     
+     //dar de baja logica, alta logica y eliminar del todoooo
+    /*InstalacionData instalacionData = new InstalacionData();
+    //instalacionData.bajaLogicaInstalacion(2);
+    //instalacionData.altaLogicaInstalacion(2);
+    instalacionData.borrarInstalacion(2); 
+    */
     
-}
-        
+    //CONSULTAS MASAJISTA
+    //para agregar un masajista
+    //Masajista masajista = new Masajista (1111, "Hector Manosuave", "2665789665", "Facial", true);
+    /*Masajista masajista1 = new Masajista (2222, "Roque Faces", "2664565656", "corporal", true);
+    MasajistaData masajistaData = new MasajistaData();
+    masajistaData.guardarMasajista(masajista1);*/
+    
+    //buscar masajista por matri
+    /*MasajistaData masajistaData = new MasajistaData();
+    int matricula = 1111;  
+    Masajista m = masajistaData.buscarMasajista(matricula);
+    if (m != null) {
+        System.out.println("MASAJISTA ENCONTRADO:");
+        System.out.println("Matricula: " + m.getMatricula());
+        System.out.println("Nombre Completo: " + m.getNombreCompleto());
+        System.out.println("Telefono: " + m.getTelefono());
+        System.out.println("Especialidad: " + m.getEspecialidad());
+        System.out.println("Estado: " + (m.isEstado() ? "Activo" : "Inactivo"));
+    } else {
+        System.out.println("No existe masajista con esa matricula.");
+    }*/
+    
+    // para listar los masajistas activos
+    /*MasajistaData masajistaData = new MasajistaData();
+    List<Masajista> lista = masajistaData.listarMasajistasActivos();
+
+    if (lista.isEmpty()) {
+        System.out.println("No hay masajistas activos.");
+    } else {
+        System.out.println("MASAJISTAS ACTIVOS:");
+        for (Masajista m : lista) {
+            System.out.println("Matricula: " + m.getMatricula());
+            System.out.println("Nombre: " + m.getNombreCompleto());
+            System.out.println("Telefono: " + m.getTelefono());
+            System.out.println("Especialidad: " + m.getEspecialidad());
+        }
+    }*/
+    //modificar masajista
+    /*MasajistaData masajistaData = new MasajistaData();
+    int matricula = 1111; 
+    Masajista m = masajistaData.buscarMasajista(matricula);
+
+    if (m != null) {
+
+        System.out.println("Datos ANTES de modificar:");
+        System.out.println(m);
+
+        //modificamos 
+        m.setNombreCompleto("Carlos Manosuave");
+        m.setTelefono("2665434343");
+        m.setEspecialidad("estetico");
+        m.setEstado(true);
+
+        masajistaData.modificarMasajista(m);
+
+        System.out.println("Datos DESPUES de modificar:");
+        System.out.println(m);
+
+    } else {
+        System.out.println("Lo siento pero no existe masajista con la matricula: " + matricula);
+    }*/
+    
+    //dar de baja logica, alta logica y eliminar
+    /*MasajistaData masajistaData = new MasajistaData();
+    int matricula = 1111; 
+    //masajistaData.bajaLogicaMasajista(matricula);
+    //masajistaData.altaLogicaMasajista(matricula);
+    masajistaData.borrarMasajista(matricula);*/
+    }
+}        
 
 

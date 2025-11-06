@@ -237,7 +237,7 @@ public class InstalacionData {
             ps.close();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al listar instalaciones más solicitadas: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al listar instalaciones mas solicitadas: " + ex.getMessage());
         }
 
         return instalaciones;
