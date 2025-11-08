@@ -77,7 +77,7 @@ public class TratamientoData {
             JOptionPane.showMessageDialog(null, "Error al modificar el tratamiento: " + ex.getMessage());
         }
     }
-    
+    /* ESTE NO VA
     public void eliminarTratamiento(int codTratam) {
         String sql = "UPDATE tratamiento SET activo = 0 WHERE codTratam = ?";
         
@@ -93,7 +93,7 @@ public class TratamientoData {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error al realizar la baja del tratamiento: " + ex.getMessage());
         }
-    }
+    }*/
 
     public Tratamiento buscarTratamiento(int codTratam) {
         Tratamiento tratamiento = null;
@@ -172,4 +172,57 @@ public class TratamientoData {
         }
         return tratamientos;
     }
+    public void bajaLogicaTratamiento(int codTratam) {
+    String sql = "UPDATE tratamiento SET activo = 0 WHERE codTratam = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, codTratam);
+
+        int exito = ps.executeUpdate();
+        if (exito == 1) {
+            JOptionPane.showMessageDialog(null, "Tratamiento dado de baja correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro el tratamiento a dar de baja.");
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error al dar de baja el tratamiento: " + ex.getMessage());
+    }
+}
+    
+    public void altaLogicaTratamiento(int codTratam) {
+    String sql = "UPDATE tratamiento SET activo = 1 WHERE codTratam = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, codTratam);
+
+        int exito = ps.executeUpdate();
+        if (exito == 1) {
+            JOptionPane.showMessageDialog(null, "Tratamiento dado de alta correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro el tratamiento a dar de alta.");
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error al dar de alta el tratamiento: " + ex.getMessage());
+    }
+    }    
+    public void eliminarTratamientoDefinitivo(int codTratam) {
+    String sql = "DELETE FROM tratamiento WHERE codTratam = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, codTratam);
+
+        int exito = ps.executeUpdate();
+        
+        if (exito == 1) {
+            JOptionPane.showMessageDialog(null, "Tratamiento eliminado definitivamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontro el tratamiento para eliminar.");
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar definitivamente: " + ex.getMessage());
+    }
+}
 }

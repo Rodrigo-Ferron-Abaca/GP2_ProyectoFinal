@@ -384,6 +384,13 @@ public class GR2_FINAL {
                 System.out.println("Costo: $" + t.getCosto());
             }
         }*/
+       //dar de baja logica, alta logica y eliminar
+    /*TratamientoData tratamientoData = new TratamientoData();
+    int codTratam = 2; 
+    //tratamientoData.bajaLogicaTratamiento(codTratam);
+    //tratamientoData.altaLogicaTratamiento(codTratam);
+    tratamientoData.eliminarTratamientoDefinitivo(codTratam);*/
+       
     
     
        
