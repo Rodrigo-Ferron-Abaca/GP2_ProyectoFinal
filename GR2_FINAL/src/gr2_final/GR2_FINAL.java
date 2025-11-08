@@ -15,11 +15,13 @@ import gr2_final.accesoadatos.ConsultorioData;
 import gr2_final.accesoadatos.DiaDeSpaData;
 import gr2_final.accesoadatos.InstalacionData;
 import gr2_final.accesoadatos.MasajistaData;
+import gr2_final.accesoadatos.TratamientoData;
 import gr2_final.entidades.Cliente;
 import gr2_final.entidades.Consultorio;
 import gr2_final.entidades.DiaDeSpa;
 import gr2_final.entidades.Instalacion;
 import gr2_final.entidades.Masajista;
+import gr2_final.entidades.Tratamiento;
 import javax.swing.JOptionPane;
 
 /**
@@ -302,7 +304,89 @@ public class GR2_FINAL {
     int matricula = 1111; 
     //masajistaData.bajaLogicaMasajista(matricula);
     //masajistaData.altaLogicaMasajista(matricula);
-    masajistaData.borrarMasajista(matricula);*/
+    masajistaData.borrarMasajista(matricula);*/ 
+    
+    //CONSULTAS DE TRATAMIENTO
+    //Agregar tratamiento
+        //Tratamiento tratamiento = new Tratamiento (1,"full trateminto", "facial", "rejuvenecimiento facial", 30, 15000, true);
+       /* Tratamiento tratamiento2 = new Tratamiento (2,"especial relax", "relajacion", "spa relax", 60, 30000, true);
+        TratamientoData tratamientoData = new TratamientoData();
+        tratamientoData.guardarTratamiento(tratamiento2);*/
+       
+       //modificar un tratamiento
+       /*TratamientoData tratamientoData = new TratamientoData();
+        Tratamiento t = new Tratamiento();
+        t.setCodTratam(1); 
+        t.setNombre("Masaje de Relajacion Profunda");
+        t.setTipo("relajacion");
+        t.setDetalle("Masaje completo con aceites esenciales.");
+        t.setDuracion(45);
+        t.setCosto(18500); 
+        t.setActivo(true);
+        
+        tratamientoData.modificarTratamiento(t);*/
+       
+       //buscar algun tratamiento
+       /*TratamientoData tratamientoData = new TratamientoData();
+        int codigoBuscado = 2;
+        
+        Tratamiento t = tratamientoData.buscarTratamiento(codigoBuscado);
+        
+        if (t != null) {
+            System.out.println("Tratamiento encontrado:");
+            System.out.println("Codigo: " + t.getCodTratam());
+            System.out.println("Nombre: " + t.getNombre());
+            System.out.println("Tipo: " + t.getTipo());
+            System.out.println("Detalle: " + t.getDetalle());
+            System.out.println("Duracion: " + t.getDuracion() + " min");
+            System.out.println("Costo: $" + t.getCosto());
+            System.out.println("Activo: " + (t.isActivo() ? "Si" : "No"));
+        } else {
+            System.out.println("No se encontro el tratamiento con el codigo: " + codigoBuscado);
+        }*/
+       
+       //listar tratamientos
+       /*TratamientoData tratamientoData = new TratamientoData();
+        List<Tratamiento> lista = tratamientoData.listarTratamientos();
+
+        if (lista.isEmpty()) {
+            System.out.println("No hay tratamientos activos cargados.");
+        } else {
+            System.out.println("Tratamientos disponibles:");
+            for (Tratamiento t : lista) {
+                
+                System.out.println("Codigo: " + t.getCodTratam());
+                System.out.println("Nombre: " + t.getNombre());
+                System.out.println("Tipo: " + t.getTipo());
+                System.out.println("Detalle: " + t.getDetalle());
+                System.out.println("Duracion: " + t.getDuracion() + " min");
+                System.out.println("Costo: $" + t.getCosto());
+                System.out.println("Activo: " + (t.isActivo() ? "Si" : "No"));
+            }
+        }*/
+       
+       //listar por tipo
+       /*TratamientoData tratamientoData = new TratamientoData();
+        String tipoBuscado = "relajacion";
+
+        List<Tratamiento> lista = tratamientoData.listarTratamientosPorTipo(tipoBuscado);
+
+        if (lista.isEmpty()) {
+            System.out.println("No se encontraron tratamientos del tipo: " + tipoBuscado);
+        } else {
+            System.out.println("Tratamientos tipo: " + tipoBuscado);
+            for (Tratamiento t : lista) {
+               
+                System.out.println("Codigo: " + t.getCodTratam());
+                System.out.println("Nombre: " + t.getNombre());
+                System.out.println("Detalle: " + t.getDetalle());
+                System.out.println("Duracion: " + t.getDuracion() + " min");
+                System.out.println("Costo: $" + t.getCosto());
+            }
+        }*/
+    
+    
+       
     }
 }        
 
