@@ -43,11 +43,7 @@ public class InstalacionVista extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Código:");
 
-        jTextField1.setText("jTextField1");
-
         jLabel3.setText("Nombre:");
-
-        jTextField2.setText("jTextField2");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -76,7 +72,7 @@ public class InstalacionVista extends javax.swing.JInternalFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(68, 68, 68)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2))
                 .addGap(69, 69, 69)

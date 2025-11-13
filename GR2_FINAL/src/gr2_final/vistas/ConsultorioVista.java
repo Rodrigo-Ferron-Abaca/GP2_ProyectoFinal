@@ -44,15 +44,11 @@ public class ConsultorioVista extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Nro Consultorio:");
 
-        jTextField1.setText("jTextField1");
-
         jLabel3.setText("Usos:");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel4.setText("Equipamiento:");
-
-        jTextField2.setText("jTextField2");
 
         jCheckBox1.setText("Apto");
 
