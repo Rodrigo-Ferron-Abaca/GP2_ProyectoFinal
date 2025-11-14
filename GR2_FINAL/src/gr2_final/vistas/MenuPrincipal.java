@@ -2,7 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package gr2_final.vista;
+package gr2_final.vistas;
+import java.awt.Color;
 
 /**
  *
@@ -29,9 +30,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         escritorio = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuClientes = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
         jMenuMasajes = new javax.swing.JMenu();
         jMenuTratamientos = new javax.swing.JMenu();
         jMenuSalir = new javax.swing.JMenu();
@@ -42,34 +41,22 @@ public class MenuPrincipal extends javax.swing.JFrame {
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 1019, Short.MAX_VALUE)
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 277, Short.MAX_VALUE)
+            .addGap(0, 711, Short.MAX_VALUE)
         );
 
         jMenuClientes.setText("Cliente");
 
-        jMenuItem2.setText("Nuevo Cliente");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem1.setText("Administrar Clientes");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenuClientes.add(jMenuItem2);
-
-        jMenuItem1.setText("Buscar Cliente");
         jMenuClientes.add(jMenuItem1);
-
-        jMenuItem3.setBackground(new java.awt.Color(48, 50, 53));
-        jMenuItem3.setText("Lista de Clientes");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        jMenuClientes.add(jMenuItem3);
 
         jMenuBar1.add(jMenuClientes);
 
@@ -103,13 +90,14 @@ public class MenuPrincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        escritorio.removeAll();
+        escritorio.repaint();
+        ClienteVista cliente = new ClienteVista();
+        cliente.setVisible(true);
+        cliente.getContentPane().setBackground(new Color(68,167,132));
+        escritorio.add(cliente);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void salir(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salir
 System.exit(0);        // TODO add your handling code here:
@@ -155,8 +143,6 @@ System.exit(0);        // TODO add your handling code here:
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuClientes;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenu jMenuMasajes;
     private javax.swing.JMenu jMenuSalir;
     private javax.swing.JMenu jMenuTratamientos;
