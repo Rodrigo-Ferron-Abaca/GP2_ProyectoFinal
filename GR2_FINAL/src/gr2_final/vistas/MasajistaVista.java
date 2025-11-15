@@ -17,16 +17,12 @@ import javax.swing.table.DefaultTableModel;
 public class MasajistaVista extends javax.swing.JInternalFrame {
 
     private MasajistaData mData = new MasajistaData();
-    private DefaultTableModel modelo;
+    private DefaultTableModel modelo = new DefaultTableModel();
     /**
      * Creates new form MasajistaView
      */
     public MasajistaVista() {
         initComponents();
-        modelo = new DefaultTableModel();
-        armarCabecera();
-        cargarEspecialidades();
-        cargarTablaGeneral();
     }
     
     private void cargarEspecialidades() {
@@ -43,14 +39,12 @@ public class MasajistaVista extends javax.swing.JInternalFrame {
         cbFiltroEspecialidad.addItem("estetico");*/
     }
     
-     //crea/modifica la tabla
-    private void armarCabecera() {
+    private void armarTabla() {
         modelo.addColumn("Matricula");
         modelo.addColumn("Nombre");
-        modelo.addColumn("Telefono");
+        modelo.addColumn("Teléfono");
         modelo.addColumn("Especialidad");
         modelo.addColumn("Estado");
-
         tablaMasajistas.setModel(modelo);
     }
 
@@ -114,7 +108,6 @@ public class MasajistaVista extends javax.swing.JInternalFrame {
         btnLimpiar = new javax.swing.JButton();
         jcheckActivo = new javax.swing.JCheckBox();
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel1.setText("MASAJISTA");
 
         jLabel2.setText("Matrícula:");
@@ -131,11 +124,17 @@ public class MasajistaVista extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Especialidad");
 
-        tablaMasajistas.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaMasajistasMouseClicked(evt);
+        tablaMasajistas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
             }
-        });
+        ));
         jScrollPane2.setViewportView(tablaMasajistas);
 
         btnGuardar.setText("Guardar");
@@ -172,42 +171,45 @@ public class MasajistaVista extends javax.swing.JInternalFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4))
+                                .addGap(36, 36, 36))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jcheckActivo))
+                                .addGap(72, 72, 72)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtMatricula, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(cbEspecialidad, 0, 133, Short.MAX_VALUE)
+                                    .addComponent(txtTelefono)
+                                    .addComponent(txtNombreComp))
+                                .addGap(142, 142, 142)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnModificar, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnLimpiar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnEliminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(239, 239, 239)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(36, 36, 36))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jcheckActivo))
-                        .addGap(72, 72, 72)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .addComponent(txtMatricula, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cbEspecialidad, 0, 133, Short.MAX_VALUE)
-                                .addComponent(txtTelefono)
-                                .addComponent(txtNombreComp))
-                            .addGap(142, 142, 142)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(btnModificar, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(btnLimpiar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnEliminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -315,18 +317,6 @@ public class MasajistaVista extends javax.swing.JInternalFrame {
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         limpiarCampos();
     }//GEN-LAST:event_btnLimpiarActionPerformed
-
-    private void tablaMasajistasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMasajistasMouseClicked
-        int fila = tablaMasajistas.getSelectedRow();
-
-
-        txtMatricula.setText(modelo.getValueAt(fila, 0).toString());
-        txtNombreComp.setText(modelo.getValueAt(fila, 1).toString());
-        txtTelefono.setText(modelo.getValueAt(fila, 2).toString());
-        cbEspecialidad.setSelectedItem(modelo.getValueAt(fila, 3).toString());
-        jcheckActivo.setSelected(modelo.getValueAt(fila, 4).equals("Activo"));
-
-    }//GEN-LAST:event_tablaMasajistasMouseClicked
      
     
 
