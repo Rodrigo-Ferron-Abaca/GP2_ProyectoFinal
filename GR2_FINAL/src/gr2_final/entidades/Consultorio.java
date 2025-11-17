@@ -9,6 +9,7 @@ package gr2_final.entidades;
  * @author KEVIN
  */
 public class Consultorio {
+
     private int nroConsultorio;
     private String usos;
     private String equipamiento;
@@ -58,9 +59,7 @@ public class Consultorio {
 
     @Override
     public String toString() {
-        return "Consultorio{" + "nroConsultorio=" + nroConsultorio + ", usos=" + usos + ", equipamiento=" + equipamiento + ", apto=" + apto + '}';
+        return "Consultorio " + nroConsultorio;
     }
-    
-    
-    
+
 }

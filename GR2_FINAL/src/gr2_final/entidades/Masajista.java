@@ -9,6 +9,7 @@ package gr2_final.entidades;
  * @author KEVIN
  */
 public class Masajista {
+
     private int matricula;
     private String nombreCompleto;
     private String telefono;
@@ -68,8 +69,7 @@ public class Masajista {
 
     @Override
     public String toString() {
-        return "Masajista{" + "matricula=" + matricula + ", nombreCompleto=" + nombreCompleto + ", telefono=" + telefono + ", especialidad=" + especialidad + ", estado=" + estado + '}';
+        return nombreCompleto;
     }
-    
-    
+
 }

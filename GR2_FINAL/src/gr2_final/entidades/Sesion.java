@@ -4,25 +4,28 @@
  */
 package gr2_final.entidades;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
  * @author KEVIN
  */
 public class Sesion {
+
     private int codSesion;
-    private LocalDate fechaHoraInicio;
-    private LocalDate fechaHoraFin;
+    private LocalDateTime fechaHoraInicio;
+    private LocalDateTime fechaHoraFin;
     private boolean estado;
     private Tratamiento codigoTratam;
     private Consultorio nroConsutorio;
     private Masajista matricula;
     private DiaDeSpa codPack;
+
     public Sesion() {
     }
 
-    public Sesion(int codSesion, LocalDate fechaHoraInicio, LocalDate fechaHoraFin, boolean estado, Tratamiento codigoTratam, Consultorio nroConsutorio, Masajista matricula, DiaDeSpa codPack) {
+    public Sesion(int codSesion, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,boolean estado, Tratamiento codigoTratam, Consultorio nroConsutorio,
+            Masajista matricula, DiaDeSpa codPack) {
         this.codSesion = codSesion;
         this.fechaHoraInicio = fechaHoraInicio;
         this.fechaHoraFin = fechaHoraFin;
@@ -41,19 +44,19 @@ public class Sesion {
         this.codSesion = codSesion;
     }
 
-    public LocalDate getFechaHoraInicio() {
+    public LocalDateTime getFechaHoraInicio() {
         return fechaHoraInicio;
     }
 
-    public void setFechaHoraInicio(LocalDate fechaHoraInicio) {
+    public void setFechaHoraInicio(LocalDateTime fechaHoraInicio) {
         this.fechaHoraInicio = fechaHoraInicio;
     }
 
-    public LocalDate getFechaHoraFin() {
+    public LocalDateTime getFechaHoraFin() {
         return fechaHoraFin;
     }
 
-    public void setFechaHoraFin(LocalDate fechaHoraFin) {
+    public void setFechaHoraFin(LocalDateTime fechaHoraFin) {
         this.fechaHoraFin = fechaHoraFin;
     }
 
@@ -88,8 +91,7 @@ public class Sesion {
     public void setMatricula(Masajista matricula) {
         this.matricula = matricula;
     }
-    
-    // NUEVOS GETTER Y SETTER
+
     public DiaDeSpa getCodPack() {
         return codPack;
     }
@@ -100,6 +102,7 @@ public class Sesion {
 
     @Override
     public String toString() {
-        return "Sesion{" + "codSesion=" + codSesion + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin + ", estado=" + estado + ", codigoTratam=" + codigoTratam + ", nroConsutorio=" + nroConsutorio + ", matricula=" + matricula + ", codPack=" + codPack + '}';
-    } 
+        return "Sesion{"+ "codSesion=" + codSesion + ", fechaHoraInicio=" + fechaHoraInicio + ", fechaHoraFin=" + fechaHoraFin+ ", estado="
+                + estado + ", codigoTratam=" + codigoTratam + ", nroConsutorio=" + nroConsutorio + ", matricula=" + matricula + ", codPack=" + codPack + '}';
+    }
 }

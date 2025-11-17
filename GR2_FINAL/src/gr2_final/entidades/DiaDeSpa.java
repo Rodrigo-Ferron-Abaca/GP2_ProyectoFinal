@@ -4,7 +4,7 @@
  */
 package gr2_final.entidades;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class DiaDeSpa {
 
     private int codPack;
-    private LocalDate fechaHora;
+    private LocalDateTime fechaHora;
     private String preferencias;
     private double monto;
     private boolean estado;
@@ -22,7 +22,7 @@ public class DiaDeSpa {
     public DiaDeSpa() {
     }
 
-    public DiaDeSpa(int codPack, LocalDate fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
+    public DiaDeSpa(int codPack, LocalDateTime fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
         this.codPack = codPack;
         this.fechaHora = fechaHora;
         this.preferencias = preferencias;
@@ -31,7 +31,7 @@ public class DiaDeSpa {
         this.codCli = codCli;
     }
 
-    public DiaDeSpa(LocalDate fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
+    public DiaDeSpa(LocalDateTime fechaHora, String preferencias, double monto, boolean estado, Cliente codCli) {
         this.fechaHora = fechaHora;
         this.preferencias = preferencias;
         this.monto = monto;
@@ -47,11 +47,11 @@ public class DiaDeSpa {
         this.codPack = codPack;
     }
 
-    public LocalDate getFechaHora() {
+    public LocalDateTime getFechaHora() {
         return fechaHora;
     }
 
-    public void setFechaHora(LocalDate fechaHora) {
+    public void setFechaHora(LocalDateTime fechaHora) {
         this.fechaHora = fechaHora;
     }
 
@@ -89,7 +89,7 @@ public class DiaDeSpa {
 
     @Override
     public String toString() {
-        return "DiaDeSpa{" + "codPack=" + codPack + ", fechaHora=" + fechaHora + ", preferencias=" + preferencias + ", monto=" + monto + ", estado=" + estado + ", codCli=" + codCli + '}';
+        return "Pack" +codPack + " a $" + monto;
     }
 
 }

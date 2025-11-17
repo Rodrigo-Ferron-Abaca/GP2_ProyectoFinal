@@ -10,20 +10,28 @@ package gr2_final.entidades;
  */
 public class SesionInstalacion {
     private int codSesion;
-    private Instalacion codInst;
+    private int codInstal;
 
-    public SesionInstalacion() {
-    }
+    public SesionInstalacion() {}
 
-    public SesionInstalacion(int codSesion, Instalacion codInst) {
+    public SesionInstalacion(int codSesion, int codInstal) {
         this.codSesion = codSesion;
-        this.codInst = codInst;
+        this.codInstal = codInstal;
     }
 
-    @Override
-    public String toString() {
-        return "SesionInstalacion{" + "codSesion=" + codSesion + ", codInst=" + codInst + '}';
+    public int getCodSesion() {
+        return codSesion;
     }
-    
-    
+
+    public void setCodSesion(int codSesion) {
+        this.codSesion = codSesion;
+    }
+
+    public int getCodInstal() {
+        return codInstal;
+    }
+
+    public void setCodInstal(int codInstal) {
+        this.codInstal = codInstal;
+    }
 }

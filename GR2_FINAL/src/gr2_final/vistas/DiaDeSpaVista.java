@@ -8,6 +8,9 @@ import gr2_final.accesoadatos.ClienteData;
 import gr2_final.accesoadatos.DiaDeSpaData;
 import gr2_final.entidades.Cliente;
 import gr2_final.entidades.DiaDeSpa;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -45,33 +48,54 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     }
     
     private void cargarClientes() {
-        List<Cliente> lista = cData.listarClientes();
+        List<Cliente> lista = cData.listaClientes();
         for (Cliente c : lista) {
             jCCliente.addItem(c);
         }
     }
+    private LocalDate obtenerFecha() {
+        Date fechaSeleccionada = jDChoserFechas.getDate();
+        if (fechaSeleccionada == null) {
+            return null;
+        }
+        return fechaSeleccionada.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+    
+    
     
     private void limpiarCampos() {
         jTCodigo.setText("");
-        jTMonto.setText("");
         jTPreferencias.setText("");
-        jTFecha.setText("");
+        jTMonto.setText("");
         jCCliente.setSelectedIndex(0);
+        jDChoserFechas.setDate(null);
         jCheckActivo.setSelected(true);
     }
-    private void cargarTablaPorFecha(LocalDate fecha) {
-        limpiarTabla();
-        List<DiaDeSpa> lista = dsData.listarDiaDeSpaPorFecha(fecha);
+    
+    
+    
+   private void cargarTablaGeneral() {
+        
+    limpiarTabla();
+    List<DiaDeSpa> lista = dsData.listarDiasDeSpa();
 
-        for (DiaDeSpa d : lista) {
-            modelo.addRow(new Object[]{
-                d.getCodPack(),
-                d.getCliente().getNombre() + " " + d.getCliente().getApellido(),
-                d.getFechaHora(),
-                d.getMonto(),
-                d.isEstado() ? "Activo" : "Inactivo"
-            });
-        }
+    for (DiaDeSpa ds : lista) {
+
+        // Validación para evitar NullPointerException
+        String nombreCliente = (ds.getCodCli() != null)
+                ? ds.getCodCli().getNombreCompleto()
+                : "Sin cliente";
+
+        modelo.addRow(new Object[]{
+            ds.getCodPack(),
+            nombreCliente,
+            ds.getFechaHora(),
+            ds.getMonto(),
+            ds.isEstado() ? "Activo" : "Anulado"
+        });
+    }
     }
     
 
@@ -143,6 +167,11 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jCheckActivo.setText("Activo");
 
         jBNuevo.setText("Nuevo");
+        jBNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBNuevoActionPerformed(evt);
+            }
+        });
 
         jBGuardar.setText("Guardar");
         jBGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -152,10 +181,25 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         });
 
         jBModificar.setText("Modificar");
+        jBModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBModificarActionPerformed(evt);
+            }
+        });
 
         jBEliminar.setText("Eliminar");
+        jBEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBEliminarActionPerformed(evt);
+            }
+        });
 
         jBuscar.setText("Buscar");
+        jBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBuscarActionPerformed(evt);
+            }
+        });
 
         jTabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -171,6 +215,11 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jScrollPane3.setViewportView(jTabla);
 
         jBListarfecha.setText("Listar por fecha");
+        jBListarfecha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBListarfechaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -280,18 +329,134 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
-        try {
-            DiaDeSpa d = new DiaDeSpa();
+       try {
 
-            Cliente cli = (Cliente) jCCliente.getSelectedItem();
-            d.setCliente(cli);
-
-            if (jTFecha.getText() == "") {
-                JOptionPane.showMessageDialog(this, "Seleccione una fecha");
+            LocalDate fecha = obtenerFecha();
+            if (fecha == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una fecha.");
                 return;
             }
+
+            DiaDeSpa ds = new DiaDeSpa();
+            ds.setCodCli((Cliente) jCCliente.getSelectedItem());
+            ds.setFechaHora(fecha.atStartOfDay());
+            ds.setPreferencias(jTPreferencias.getText());
+            ds.setMonto(Double.parseDouble(jTMonto.getText()));
+            ds.setEstado(true);
+
+            dsData.guardarDiaDeSpa(ds);
+
+            JOptionPane.showMessageDialog(this, "Día de Spa guardado con éxito");
+            cargarTablaGeneral();
+            limpiarCampos();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar: " + e.getMessage());
+        }
     }//GEN-LAST:event_jBGuardarActionPerformed
-    }    
+
+    private void jBModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBModificarActionPerformed
+        try {
+
+            LocalDate fecha = obtenerFecha();
+            if (fecha == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una fecha.");
+                return;
+            }
+
+            DiaDeSpa ds = new DiaDeSpa();
+            ds.setCodPack(Integer.parseInt(jTCodigo.getText()));
+            ds.setCodCli((Cliente) jCCliente.getSelectedItem());
+            ds.setFechaHora(fecha.atStartOfDay());
+            ds.setPreferencias(jTPreferencias.getText());
+            ds.setMonto(Double.parseDouble(jTMonto.getText()));
+            ds.setEstado(jCheckActivo.isSelected());
+
+            dsData.modificarDiaDeSpa(ds);
+
+            JOptionPane.showMessageDialog(this, "Día de Spa modificado");
+            cargarTablaGeneral();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al modificar: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jBModificarActionPerformed
+
+    private void jBEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBEliminarActionPerformed
+         try {
+            int codigo = Integer.parseInt(jTCodigo.getText());
+            dsData.eliminarDiaDeSpa(codigo);
+
+            JOptionPane.showMessageDialog(this, "Día de Spa anulado");
+            cargarTablaGeneral();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al anular: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jBEliminarActionPerformed
+
+    private void jBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBuscarActionPerformed
+        try {
+            int codigo = Integer.parseInt(jTCodigo.getText());
+            DiaDeSpa ds = dsData.buscarDiaDeSpa(codigo);
+
+            if (ds != null) {
+
+                jTCodigo.setText(ds.getCodPack() + "");
+                jCCliente.setSelectedItem(ds.getCodCli());
+
+                // poner fecha en el datechooser
+                Date fechaConvertida = Date.from(
+                        ds.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()
+                );
+                jDChoserFechas.setDate(fechaConvertida);
+
+                jTPreferencias.setText(ds.getPreferencias());
+                jTMonto.setText(ds.getMonto() + "");
+                jCheckActivo.setSelected(ds.isEstado());
+
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró el Día de Spa");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error en la búsqueda.");
+        }
+    }//GEN-LAST:event_jBuscarActionPerformed
+
+    private void jBListarfechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListarfechaActionPerformed
+        LocalDate fecha = obtenerFecha();
+
+        if (fecha == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione una fecha para listar.");
+            return;
+        }
+
+        List<DiaDeSpa> lista = dsData.listarDiasDeSpaPorFecha(fecha);
+        modelo.setRowCount(0);
+
+        for (DiaDeSpa ds : lista) {
+            modelo.addRow(new Object[]{
+                ds.getCodPack(),
+                ds.getCodCli().getNombreCompleto(),
+                ds.getFechaHora(),
+                ds.getMonto(),
+                ds.isEstado() ? "Activo" : "Anulado"
+            });
+        }
+
+    
+    }//GEN-LAST:event_jBListarfechaActionPerformed
+
+    private void jBNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBNuevoActionPerformed
+    jTCodigo.setEditable(false);
+    jCCliente.setSelectedIndex(-1);
+    jDChoserFechas.setDate(null);
+    jTMonto.setText("");
+    jTPreferencias.setText("");
+    jBEliminar.setEnabled(false);
+    jBModificar.setEnabled(false);
+    }//GEN-LAST:event_jBNuevoActionPerformed
+       
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBEliminar;
@@ -300,7 +465,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     private javax.swing.JButton jBModificar;
     private javax.swing.JButton jBNuevo;
     private javax.swing.JButton jBuscar;
-    private javax.swing.JComboBox<String> jCCliente;
+    private javax.swing.JComboBox<Cliente> jCCliente;
     private javax.swing.JCheckBox jCheckActivo;
     private com.toedter.calendar.JDateChooser jDChoserFechas;
     private javax.swing.JLabel jLabel1;

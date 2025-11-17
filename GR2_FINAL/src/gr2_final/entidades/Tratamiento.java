@@ -9,6 +9,7 @@ package gr2_final.entidades;
  * @author KEVIN
  */
 public class Tratamiento {
+
     private int codTratam;
     private String nombre;
     private String tipo;
@@ -88,8 +89,7 @@ public class Tratamiento {
 
     @Override
     public String toString() {
-        return "Tratamiento{" + "codTratam=" + codTratam + ", nombre=" + nombre + ", tipo=" + tipo + ", detalle=" + detalle + ", duracion=" + duracion + ", costo=" + costo + ", activo=" + activo + '}';
+        return nombre + " " + codTratam;
     }
-    
-    
+
 }

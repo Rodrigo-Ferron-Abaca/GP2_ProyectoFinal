@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class DiaDeSpaData {
         String sql = "INSERT INTO diadespa (fechaHora, preferencias, monto, estado, codCli) VALUES (?, ?, ?, ?, ?)";
         
         try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setDate(1, Date.valueOf(diaDeSpa.getFechaHora())); 
+            ps.setTimestamp(1, Timestamp.valueOf(diaDeSpa.getFechaHora())); 
             ps.setString(2, diaDeSpa.getPreferencias());
             ps.setDouble(3, diaDeSpa.getMonto());
             ps.setBoolean(4, diaDeSpa.isEstado());
@@ -59,7 +60,8 @@ public class DiaDeSpaData {
         String sql = "UPDATE diadespa SET fechaHora = ?, preferencias = ?, monto = ?, estado = ?, codCli = ? WHERE codPack = ?";
         
         try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setDate(1, Date.valueOf(diaDeSpa.getFechaHora()));
+            ps.setTimestamp(1, Timestamp.valueOf(diaDeSpa.getFechaHora()));
+
             ps.setString(2, diaDeSpa.getPreferencias());
             ps.setDouble(3, diaDeSpa.getMonto());
             ps.setBoolean(4, diaDeSpa.isEstado());
@@ -106,7 +108,7 @@ public class DiaDeSpaData {
                 if (rs.next()) {
                     diaDeSpa = new DiaDeSpa();
                     diaDeSpa.setCodPack(codPack);
-                    diaDeSpa.setFechaHora(rs.getDate("fechaHora").toLocalDate()); 
+                    diaDeSpa.setFechaHora(rs.getTimestamp("fechaHora").toLocalDateTime()); 
                     diaDeSpa.setPreferencias(rs.getString("preferencias"));
                     diaDeSpa.setMonto(rs.getDouble("monto"));
                     diaDeSpa.setEstado(rs.getBoolean("estado"));
@@ -132,7 +134,7 @@ public class DiaDeSpaData {
             while (rs.next()) {
                 DiaDeSpa diaDeSpa = new DiaDeSpa();
                 diaDeSpa.setCodPack(rs.getInt("codPack"));
-                diaDeSpa.setFechaHora(rs.getDate("fechaHora").toLocalDate());
+                diaDeSpa.setFechaHora(rs.getTimestamp("fechaHora").toLocalDateTime()); 
                 diaDeSpa.setPreferencias(rs.getString("preferencias"));
                 diaDeSpa.setMonto(rs.getDouble("monto"));
                 diaDeSpa.setEstado(rs.getBoolean("estado"));
@@ -161,7 +163,7 @@ public class DiaDeSpaData {
                 while (rs.next()) {
                     DiaDeSpa diaDeSpa = new DiaDeSpa();
                     diaDeSpa.setCodPack(rs.getInt("codPack"));
-                    diaDeSpa.setFechaHora(rs.getDate("fechaHora").toLocalDate());
+                    diaDeSpa.setFechaHora(rs.getTimestamp("fechaHora").toLocalDateTime()); 
                     diaDeSpa.setPreferencias(rs.getString("preferencias"));
                     diaDeSpa.setMonto(rs.getDouble("monto"));
                     diaDeSpa.setEstado(rs.getBoolean("estado"));
