@@ -101,9 +101,9 @@
                                   <Component id="jCCliente" alignment="0" pref="195" max="32767" attributes="0"/>
                                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                                   <Component id="jTCodigo" max="32767" attributes="0"/>
-                                  <Component id="jTFecha" alignment="0" max="32767" attributes="0"/>
                                   <Component id="jTMonto" max="32767" attributes="0"/>
                                   <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
+                                  <Component id="jDChoserFechas" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="70" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -139,10 +139,12 @@
                           <Component id="jBGuardar" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jTFecha" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jBModificar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jBModificar" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jDChoserFechas" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -197,8 +199,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Cliente:"/>
               </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="jTFecha">
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel4">
               <Properties>
@@ -290,6 +290,8 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Listar por fecha"/>
               </Properties>
+            </Component>
+            <Component class="com.toedter.calendar.JDateChooser" name="jDChoserFechas">
             </Component>
           </SubComponents>
         </Container>

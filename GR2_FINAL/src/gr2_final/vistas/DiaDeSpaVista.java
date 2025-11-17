@@ -93,7 +93,6 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jTCodigo = new javax.swing.JTextField();
         jCCliente = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jTFecha = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jTMonto = new javax.swing.JTextField();
@@ -109,6 +108,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTabla = new javax.swing.JTable();
         jBListarfecha = new javax.swing.JButton();
+        jDChoserFechas = new com.toedter.calendar.JDateChooser();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -192,9 +192,9 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
                             .addComponent(jCCliente, 0, 195, Short.MAX_VALUE)
                             .addComponent(jLabel1)
                             .addComponent(jTCodigo)
-                            .addComponent(jTFecha)
                             .addComponent(jTMonto)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jDChoserFechas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(70, 70, 70)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jBModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -222,10 +222,11 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
                     .addComponent(jLabel3)
                     .addComponent(jBGuardar))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(jBModificar))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(jBModificar))
+                    .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -301,6 +302,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     private javax.swing.JButton jBuscar;
     private javax.swing.JComboBox<String> jCCliente;
     private javax.swing.JCheckBox jCheckActivo;
+    private com.toedter.calendar.JDateChooser jDChoserFechas;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -313,7 +315,6 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField jTCodigo;
-    private javax.swing.JTextField jTFecha;
     private javax.swing.JTextField jTMonto;
     private javax.swing.JTextArea jTPreferencias;
     private javax.swing.JTable jTabla;
