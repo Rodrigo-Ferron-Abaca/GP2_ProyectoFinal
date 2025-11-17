@@ -51,7 +51,7 @@ public class InstalacionData {
     // Busca por cod
     public Instalacion buscarInstalacion(int codInst) {
         Instalacion inst = null;
-        String sql = "SELECT * FROM instalacion WHERE codInst = ?";
+        String sql = "SELECT * FROM instalacion WHERE codInstal = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, codInst);
@@ -59,7 +59,7 @@ public class InstalacionData {
 
             if (rs.next()) {
                 inst = new Instalacion();
-                inst.setCodInst(codInst);
+                inst.setCodInst(rs.getInt("codInstal"));
                 inst.setNombre(rs.getString("nombre"));
                 inst.setDetalleUso(rs.getString("detalleUso"));
                 inst.setPrecio30m(rs.getDouble("precio30m"));
@@ -84,7 +84,7 @@ public class InstalacionData {
 
             while (rs.next()) {
                 Instalacion inst = new Instalacion();
-                inst.setCodInst(rs.getInt("codInst"));
+                inst.setCodInst(rs.getInt("codInstal"));
                 inst.setNombre(rs.getString("nombre"));
                 inst.setDetalleUso(rs.getString("detalleUso"));
                 inst.setPrecio30m(rs.getDouble("precio30m"));
@@ -100,7 +100,7 @@ public class InstalacionData {
 
     // modifica la instalacion
     public void modificarInstalacion(Instalacion inst) {
-        String sql = "UPDATE instalacion SET nombre = ?, detalleUso = ?, precio30m = ?, estado = ? WHERE codInst = ?";
+        String sql = "UPDATE instalacion SET nombre = ?, detalleUso = ?, precio30m = ?, estado = ? WHERE codInstal = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, inst.getNombre());
@@ -117,13 +117,13 @@ public class InstalacionData {
             }
             ps.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al modificar instalacin: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al modificar instalacion: " + e.getMessage());
         }
     }
 
     // realiza la baja logica
     public void bajaLogicaInstalacion(int codInst) {
-        String sql = "UPDATE instalacion SET estado = false WHERE codInst = ?";
+        String sql = "UPDATE instalacion SET estado = false WHERE codInstal = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, codInst);
@@ -140,7 +140,7 @@ public class InstalacionData {
 
     // alta logica
     public void altaLogicaInstalacion(int codInst) {
-        String sql = "UPDATE instalacion SET estado = true WHERE codInst = ?";
+        String sql = "UPDATE instalacion SET estado = true WHERE codInstal = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, codInst);
@@ -154,10 +154,10 @@ public class InstalacionData {
             JOptionPane.showMessageDialog(null, "Error en alta logica: " + e.getMessage());
         }
     }
-    // y aca elimina definitivo
 
+    // eliminar definitivo
     public void borrarInstalacion(int codInst) {
-        String sql = "DELETE FROM instalacion WHERE codInst = ?";
+        String sql = "DELETE FROM instalacion WHERE codInstal = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, codInst);
@@ -172,9 +172,35 @@ public class InstalacionData {
         }
     }
 
+    public List<Instalacion> listarInstalaciones() {
+        List<Instalacion> lista = new ArrayList<>();
+        String sql = "SELECT * FROM instalacion";
+
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Instalacion inst = new Instalacion();
+                inst.setCodInst(rs.getInt("codInstal"));
+                inst.setNombre(rs.getString("nombre"));
+                inst.setDetalleUso(rs.getString("detalleUso"));
+                inst.setPrecio30m(rs.getDouble("precio30m"));
+                inst.setEstado(rs.getBoolean("estado"));
+                lista.add(inst);
+            }
+
+            ps.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar instalaciones: " + e.getMessage());
+        }
+
+        return lista;
+    }
+
     public List<Instalacion> listarInstalacionesLibresEntre(Date inicio, Date fin) {
         List<Instalacion> libres = new ArrayList<>();
-        String sql = "SELECT * FROM instalacion i WHERE i.estado = 1 AND i.codInst NOT IN ("
+        String sql = "SELECT * FROM instalacion i WHERE i.estado = 1 AND i.codInstal NOT IN ("
                 + "SELECT si.codInst FROM sesion_instalacion si "
                 + "JOIN sesion s ON s.codSesion = si.codSesion "
                 + "WHERE (s.fechaHoraInicio BETWEEN ? AND ?) OR (s.fechaHoraFin BETWEEN ? AND ?))";
@@ -190,7 +216,7 @@ public class InstalacionData {
 
             while (rs.next()) {
                 Instalacion i = new Instalacion();
-                i.setCodInst(rs.getInt("codInst"));
+                i.setCodInst(rs.getInt("codInstal"));
                 i.setNombre(rs.getString("nombre"));
                 i.setDetalleUso(rs.getString("detalleUso"));
                 i.setPrecio30m(rs.getDouble("precio30m"));
@@ -211,10 +237,10 @@ public class InstalacionData {
         List<Instalacion> instalaciones = new ArrayList<>();
         String sql = "SELECT i.*, COUNT(si.codInst) AS usos "
                 + "FROM instalacion i "
-                + "JOIN sesion_instalacion si ON i.codInst = si.codInst "
+                + "JOIN sesion_instalacion si ON i.codInstal = si.codInst "
                 + "JOIN sesion s ON s.codSesion = si.codSesion "
                 + "WHERE s.fechaHoraInicio BETWEEN ? AND ? "
-                + "GROUP BY i.codInst "
+                + "GROUP BY i.codInstal "
                 + "ORDER BY usos DESC";
 
         try {
@@ -226,7 +252,7 @@ public class InstalacionData {
 
             while (rs.next()) {
                 Instalacion i = new Instalacion();
-                i.setCodInst(rs.getInt("codInst"));
+                i.setCodInst(rs.getInt("codInstal"));
                 i.setNombre(rs.getString("nombre"));
                 i.setDetalleUso(rs.getString("detalleUso"));
                 i.setPrecio30m(rs.getDouble("precio30m"));

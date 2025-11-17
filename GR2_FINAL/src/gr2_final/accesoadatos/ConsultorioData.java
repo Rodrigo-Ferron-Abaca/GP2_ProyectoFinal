@@ -26,7 +26,7 @@ public class ConsultorioData {
     }
 
     // para guardar
-    public void guardarConsultorio(Consultorio c) {
+    /* public void guardarConsultorio(Consultorio c) {
         String sql = "INSERT INTO consultorio (nroConsultorio, usos, equipamiento, apto) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -41,7 +41,32 @@ public class ConsultorioData {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al guardar consultorio: " + e.getMessage());
         }
+    } */
+    
+    public void guardarConsultorio(Consultorio c) {
+    String sql = "INSERT INTO consultorio (usos, equipamiento, apto) VALUES (?, ?, ?)";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, c.getUsos());
+        ps.setString(2, c.getEquipamiento());
+        ps.setBoolean(3, c.isApto());
+
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            int id = rs.getInt(1);
+            c.setNroConsultorio(id);
+        }
+
+        JOptionPane.showMessageDialog(null, "Consultorio agregado con éxito.");
+        ps.close();
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al guardar consultorio: " + e.getMessage());
     }
+}
 
     // busca por nro
     public Consultorio buscarConsultorio(int nroConsultorio) {
@@ -66,29 +91,6 @@ public class ConsultorioData {
             JOptionPane.showMessageDialog(null, "Error al buscar consultorio: " + e.getMessage());
         }
         return c;
-    }
-
-    // lista de solo aptos
-    public List<Consultorio> listarConsultoriosAptos() {
-        List<Consultorio> lista = new ArrayList<>();
-        String sql = "SELECT * FROM consultorio WHERE apto = 1";
-        try {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Consultorio c = new Consultorio();
-                c.setNroConsultorio(rs.getInt("nroConsultorio"));
-                c.setUsos(rs.getString("usos"));
-                c.setEquipamiento(rs.getString("equipamiento"));
-                c.setApto(rs.getBoolean("apto"));
-                lista.add(c);
-            }
-            ps.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al listar consultorios: " + e.getMessage());
-        }
-        return lista;
     }
 
     // para modificar
@@ -163,8 +165,8 @@ public class ConsultorioData {
     }
 
     public List<Consultorio> listarConsultorios() {
-        List<Consultorio> consultorios = new ArrayList<>();
-        String sql = "SELECT * FROM consultorio WHERE apto = 1";
+        List<Consultorio> lista = new ArrayList<>();
+        String sql = "SELECT * FROM consultorio";
 
         try {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -176,41 +178,65 @@ public class ConsultorioData {
                 c.setUsos(rs.getString("usos"));
                 c.setEquipamiento(rs.getString("equipamiento"));
                 c.setApto(rs.getBoolean("apto"));
-                consultorios.add(c);
+                lista.add(c);
             }
 
             ps.close();
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al listar consultorios: " + ex.getMessage());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar todos: " + e.getMessage());
         }
 
-        return consultorios;
+        return lista;
     }
 
-    /*public Consultorio buscarConsultorioPorNumero(int nro) {
-        Consultorio c = null;
-        String sql = "SELECT * FROM consultorio WHERE nroConsultorio = ?";
-
+    // lista de solo aptos
+    public List<Consultorio> listarConsultoriosAptos() {
+        List<Consultorio> lista = new ArrayList<>();
+        String sql = "SELECT * FROM consultorio WHERE apto = 1";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, nro);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                c = new Consultorio();
+            while (rs.next()) {
+                Consultorio c = new Consultorio();
                 c.setNroConsultorio(rs.getInt("nroConsultorio"));
                 c.setUsos(rs.getString("usos"));
                 c.setEquipamiento(rs.getString("equipamiento"));
                 c.setApto(rs.getBoolean("apto"));
+                lista.add(c);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar consultorios: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    public List<Consultorio> listarPorUsos(String uso) {
+        List<Consultorio> lista = new ArrayList<>();
+        String sql = "SELECT * FROM consultorio WHERE usos = ?";
+
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, uso);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Consultorio c = new Consultorio();
+                c.setNroConsultorio(rs.getInt("nroConsultorio"));
+                c.setUsos(rs.getString("usos"));
+                c.setEquipamiento(rs.getString("equipamiento"));
+                c.setApto(rs.getBoolean("apto"));
+                lista.add(c);
             }
 
             ps.close();
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al buscar consultorio: " + ex.getMessage());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar por usos: " + e.getMessage());
         }
 
-        return c;
-    }*/
+        return lista;
+    }
+
 }

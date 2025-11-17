@@ -72,30 +72,6 @@ public class MasajistaData {
         return m;
     }
 
-    // hace lista de activos
-    public List<Masajista> listarMasajistasActivos() {
-        List<Masajista> lista = new ArrayList<>();
-        String sql = "SELECT * FROM masajista WHERE estado = 1";
-        try {
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Masajista m = new Masajista();
-                m.setMatricula(rs.getInt("matricula"));
-                m.setNombreCompleto(rs.getString("nombreCompleto"));
-                m.setTelefono(rs.getString("telefono"));
-                m.setEspecialidad(rs.getString("especialidad"));
-                m.setEstado(rs.getBoolean("estado"));
-                lista.add(m);
-            }
-            ps.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al listar masajistas: " + e.getMessage());
-        }
-        return lista;
-    }
-
     // para modificar
     public void modificarMasajista(Masajista m) {
         String sql = "UPDATE masajista SET nombreCompleto = ?, telefono = ?, especialidad = ?, estado = ? WHERE matricula = ?";
@@ -168,6 +144,30 @@ public class MasajistaData {
         }
     }
 
+        // hace lista de activos
+    public List<Masajista> listarMasajistasActivos() {
+        List<Masajista> lista = new ArrayList<>();
+        String sql = "SELECT * FROM masajista WHERE estado = 1";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Masajista m = new Masajista();
+                m.setMatricula(rs.getInt("matricula"));
+                m.setNombreCompleto(rs.getString("nombreCompleto"));
+                m.setTelefono(rs.getString("telefono"));
+                m.setEspecialidad(rs.getString("especialidad"));
+                m.setEstado(rs.getBoolean("estado"));
+                lista.add(m);
+            }
+            ps.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al listar masajistas: " + e.getMessage());
+        }
+        return lista;
+    }
+    
     public List<Masajista> listarMasajistasPorEspecialidad(String especialidad) {
         List<Masajista> masajistas = new ArrayList<>();
         String sql = "SELECT * FROM masajista WHERE especialidad = ? AND estado = 1";
