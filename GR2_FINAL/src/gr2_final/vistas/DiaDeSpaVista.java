@@ -7,9 +7,11 @@ package gr2_final.vistas;
 import gr2_final.accesoadatos.ClienteData;
 import gr2_final.accesoadatos.DiaDeSpaData;
 import gr2_final.accesoadatos.MasajistaData;
+import gr2_final.accesoadatos.SesionData;
 import gr2_final.entidades.Cliente;
 import gr2_final.entidades.DiaDeSpa;
 import gr2_final.entidades.Masajista;
+import gr2_final.entidades.Sesion;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,28 +28,38 @@ import javax.swing.table.DefaultTableModel;
  * @author KEVIN
  */
 public class DiaDeSpaVista extends javax.swing.JInternalFrame {
-    
+
     private DiaDeSpaData dsData = new DiaDeSpaData();
     private ClienteData cData = new ClienteData();
     private MasajistaData mData = new MasajistaData();
     private DefaultTableModel modeloSpa;
-    private DefaultTableModel modeloMasajistas;
-    
+    private DefaultTableModel modeloA2;
+
     /**
      * Creates new form DiaDeSpaVista
      */
     public DiaDeSpaVista() {
         initComponents();
-       modeloSpa = new DefaultTableModel();
-       modeloMasajistas = new DefaultTableModel();
-       armarCabeceraSpa();
-       armarCabeceraMasajistas();
-       cargarClientes();
-       cargarHoras();
-       cargarTablaGeneralSpa();
+        modeloSpa = new DefaultTableModel();
+        modeloA2 = new DefaultTableModel();
+        armarCabeceraSpa();
+        armarCabeceraA2();
+        cargarClientes();
+        cargarHoras();
+        cargarTablaGeneralSpa();
+
+        jCCliente.addActionListener(e -> recalcularMontoAutomatico());
+
+        jDChoserFechas.getDateEditor().addPropertyChangeListener(evt -> {
+            if ("date".equals(evt.getPropertyName())) {
+                recalcularMontoAutomatico();
+            }
+        });
+
+        jCHora.addActionListener(e -> recalcularMontoAutomatico());
     }
-    
-     private void armarCabeceraSpa() {
+
+    private void armarCabeceraSpa() {
         modeloSpa.addColumn("Código");
         modeloSpa.addColumn("Cliente");
         modeloSpa.addColumn("Fecha - Hora");
@@ -55,17 +67,21 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         modeloSpa.addColumn("Estado");
         jTablaSpa.setModel(modeloSpa);
     }
-     
-     private void armarCabeceraMasajistas() {
-        modeloMasajistas.addColumn("Matrícula");
-        modeloMasajistas.addColumn("Nombre");
-        modeloMasajistas.addColumn("Especialidad");
-        modeloMasajistas.addColumn("Teléfono");
-        jTMasajistas.setModel(modeloMasajistas);
+
+    private void armarCabeceraA2() {
+        modeloA2.addColumn("Cod Sesión");
+        modeloA2.addColumn("Inicio");
+        modeloA2.addColumn("Fin");
+        modeloA2.addColumn("Tratamiento");
+        modeloA2.addColumn("Consultorio");
+        modeloA2.addColumn("Masajista");
+        modeloA2.addColumn("Estado");
+
+        jTable2.setModel(modeloA2);
     }
-    
-   private void limpiarTablaMasajistas() {
-        modeloMasajistas.setRowCount(0);
+
+    private void limpiarTablaA2() {
+        modeloA2.setRowCount(0);
     }
 
     private void cargarClientes() {
@@ -74,56 +90,122 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
             jCCliente.addItem(c);
         }
     }
-    
-     private void cargarHoras() {
+
+    private void cargarHoras() {
         jCHora.removeAllItems();
         for (int h = 8; h <= 21; h++) {
             jCHora.addItem(String.format("%02d:00", h));
         }
     }
-    
+
     private LocalDateTime obtenerFechaHora() {
 
         Date fecha = jDChoserFechas.getDate();
-        if (fecha == null) return null;
+        if (fecha == null) {
+            return null;
+        }
 
         LocalDate f = fecha.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         String horaSel = (String) jCHora.getSelectedItem();
-        if (horaSel == null) return null;
+        if (horaSel == null) {
+            return null;
+        }
 
         LocalTime hora = LocalTime.parse(horaSel);
 
         return LocalDateTime.of(f, hora);
     }
-    
+
     private void cargarTablaGeneralSpa() {
         modeloSpa.setRowCount(0);
         List<DiaDeSpa> lista = dsData.listarDiasDeSpa();
 
         for (DiaDeSpa ds : lista) {
+
+            // Calcular monto dinámico actual
+            double monto = calcularMontoDiaSpa(ds.getCodPack());
+
             modeloSpa.addRow(new Object[]{
                 ds.getCodPack(),
                 ds.getCodCli().getNombreCompleto(),
                 ds.getFechaHora(),
-                ds.getMonto(),
+                monto,
                 ds.isEstado() ? "Activo" : "Anulado"
             });
         }
     }
-    
-     private void limpiarCampos() {
+
+private double calcularMontoDiaSpa(int codPack) {
+
+    SesionData sd = new SesionData();
+    List<Sesion> sesiones = sd.listarSesionesPorPack(codPack);
+
+    double total = 0;
+
+    for (Sesion s : sesiones) {
+
+        long minutos = java.time.Duration.between(
+                s.getFechaHoraInicio(),
+                s.getFechaHoraFin()
+        ).toMinutes();
+
+        int unidades = (int) Math.ceil(minutos / 30.0);
+
+        double precio = s.getCodigoTratam().getCosto();
+
+        total += unidades * precio;
+    }
+
+    return total;
+}
+
+
+    private void recalcularMontoAutomatico() {
+
+        if (jTCodigo.getText().isEmpty()) {
+            return; // no hay pack seleccionado aún
+        }
+
+        int codPack = Integer.parseInt(jTCodigo.getText());
+
+        // recalcular
+        double total = calcularMontoDiaSpa(codPack);
+
+        // mostrarlo
+        jTMonto.setText(String.valueOf(total));
+
+        // refrescar la tabla principal
+        cargarTablaGeneralSpa();
+    }
+
+    private void recalcularMontoSiHayPack() {
+        if (jTCodigo.getText().isEmpty()) {
+            return;
+        }
+
+        int codPack = Integer.parseInt(jTCodigo.getText());
+
+        double monto = calcularMontoDiaSpa(codPack);
+
+        jTMonto.setText(String.valueOf(monto));
+
+        // Actualizar la tabla general
+        cargarTablaGeneralSpa();
+    }
+
+    private void limpiarCampos() {
         jTCodigo.setText("");
         jTMonto.setText("");
         jTPreferencias.setText("");
         jDChoserFechas.setDate(null);
         jCHora.setSelectedIndex(-1);
-        modeloMasajistas.setRowCount(0);
+        modeloA2.setRowCount(0);
     }
-    
-     private void listarMasajistasLibres() {
 
-        limpiarTablaMasajistas();
+    private void listarMasajistasLibres() {
+
+        limpiarTablaA2();
 
         LocalDateTime fechaHora = obtenerFechaHora();
         if (fechaHora == null) {
@@ -137,7 +219,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         List<Masajista> libres = mData.listarMasajistasLibresEntre(inicio, fin);
 
         for (Masajista m : libres) {
-            modeloMasajistas.addRow(new Object[]{
+            modeloA2.addRow(new Object[]{
                 m.getMatricula(),
                 m.getNombreCompleto(),
                 m.getEspecialidad(),
@@ -148,15 +230,11 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         if (libres.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No hay masajistas libres en ese horario.");
         }
-    
-   
+
     }
-    
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,7 +243,6 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTCodigo = new javax.swing.JTextField();
@@ -185,11 +262,13 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jBuscar = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTablaSpa = new javax.swing.JTable();
-        jBListarfecha = new javax.swing.JButton();
+        jBBuscarCodPack = new javax.swing.JButton();
         jDChoserFechas = new com.toedter.calendar.JDateChooser();
         jCHora = new javax.swing.JComboBox<>();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTMasajistas = new javax.swing.JTable();
+        jTable2 = new javax.swing.JTable();
+        jTBuscarCodPack = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -271,14 +350,14 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         ));
         jScrollPane3.setViewportView(jTablaSpa);
 
-        jBListarfecha.setText("Listar Masajistas Libres ");
-        jBListarfecha.addActionListener(new java.awt.event.ActionListener() {
+        jBBuscarCodPack.setText("Buscar info");
+        jBBuscarCodPack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBListarfechaActionPerformed(evt);
+                jBBuscarCodPackActionPerformed(evt);
             }
         });
 
-        jTMasajistas.setModel(new javax.swing.table.DefaultTableModel(
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -289,102 +368,101 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane4.setViewportView(jTMasajistas);
+        jScrollPane4.setViewportView(jTable2);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(103, 103, 103)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jCheckActivo)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
-                        .addGap(73, 73, 73)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jCCliente, 0, 195, Short.MAX_VALUE)
-                            .addComponent(jLabel1)
-                            .addComponent(jTCodigo)
-                            .addComponent(jTMonto)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(70, 70, 70)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jBModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jBEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jBGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jBNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane3)
-                    .addComponent(jBListarfecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane4))
-                .addContainerGap(74, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(40, 40, 40)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jBNuevo))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jBGuardar))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel4)
-                        .addComponent(jBModificar)
-                        .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jBEliminar))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jBuscar))
-                .addGap(14, 14, 14)
-                .addComponent(jCheckActivo)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jBListarfecha)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(80, Short.MAX_VALUE))
-        );
+        jLabel7.setText("Mostrar info de Dia de Spa");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(174, 174, 174)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckActivo)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel7))
+                                .addGap(48, 48, 48)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jCCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jTCodigo)
+                                    .addComponent(jTMonto)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jTBuscarCodPack))
+                                .addGap(60, 60, 60)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jBModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jBEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jBGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jBNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jBBuscarCodPack)))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+                            .addComponent(jScrollPane4))))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(45, 45, 45)
+                .addComponent(jLabel1)
+                .addGap(40, 40, 40)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBNuevo))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(jBGuardar))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(jBModificar)
+                        .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBEliminar))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBuscar))
+                .addGap(14, 14, 14)
+                .addComponent(jCheckActivo)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jBBuscarCodPack)
+                    .addComponent(jTBuscarCodPack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(109, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -392,21 +470,19 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
-     try {
+        try {
             LocalDateTime fechaHora = obtenerFechaHora();
             if (fechaHora == null) {
                 JOptionPane.showMessageDialog(this, "Seleccione fecha y hora.");
@@ -474,7 +550,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jBModificarActionPerformed
 
     private void jBEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBEliminarActionPerformed
-         try {
+        try {
             int codigo = Integer.parseInt(jTCodigo.getText());
             dsData.eliminarDiaDeSpa(codigo);
 
@@ -489,7 +565,7 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jBEliminarActionPerformed
 
     private void jBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBuscarActionPerformed
-      try {
+        try {
             int cod = Integer.parseInt(jTCodigo.getText());
             DiaDeSpa ds = dsData.buscarDiaDeSpa(cod);
 
@@ -514,14 +590,60 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jBuscarActionPerformed
 
-    private void jBListarfechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListarfechaActionPerformed
-      listarMasajistasLibres();
+    private void jBBuscarCodPackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBBuscarCodPackActionPerformed
+        if (jTBuscarCodPack.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código de Pack.");
+            return;
+        }
 
-    
-    }//GEN-LAST:event_jBListarfechaActionPerformed
+        int codPack = Integer.parseInt(jTBuscarCodPack.getText());
+
+        DiaDeSpaData dd = new DiaDeSpaData();
+        DiaDeSpa pack = dd.buscarDiaDeSpa(codPack);
+
+        if (pack == null) {
+            JOptionPane.showMessageDialog(this, "No existe un Día de Spa con ese código.");
+            return;
+        }
+
+        jCCliente.setSelectedItem(pack.getCodCli());
+
+        // Cargar fecha
+        java.util.Date fecha = java.util.Date.from(
+                pack.getFechaHora().atZone(ZoneId.systemDefault()).toInstant()
+        );
+        jDChoserFechas.setDate(fecha);
+
+        jCHora.setSelectedItem(pack.getFechaHora().getHour());
+
+        jTPreferencias.setText(pack.getPreferencias());
+
+        jTMonto.setText(String.valueOf(pack.getMonto()));
+
+        // Estado
+        jCheckActivo.setSelected(pack.isEstado());
+
+        limpiarTablaA2(); // tu método actual
+
+        SesionData sd = new SesionData();
+        List<Sesion> sesiones = sd.listarSesionesPorPack(codPack);
+
+        for (Sesion s : sesiones) {
+
+            modeloA2.addRow(new Object[]{
+                s.getCodSesion(),
+                s.getFechaHoraInicio(),
+                s.getFechaHoraFin(),
+                s.getCodigoTratam().getNombre(),
+                s.getNroConsutorio().getNroConsultorio(),
+                s.getMatricula().getNombreCompleto(),
+                s.isEstado() ? "Activa" : "Inactiva"
+            });
+        }
+    }//GEN-LAST:event_jBBuscarCodPackActionPerformed
 
     private void jBNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBNuevoActionPerformed
-    jTCodigo.setEditable(false);
+        jTCodigo.setEditable(false);
         jCCliente.setSelectedIndex(-1);
         jDChoserFechas.setDate(null);
         jCHora.setSelectedIndex(-1);
@@ -530,12 +652,12 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         jBEliminar.setEnabled(false);
         jBModificar.setEnabled(false);
     }//GEN-LAST:event_jBNuevoActionPerformed
-       
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBBuscarCodPack;
     private javax.swing.JButton jBEliminar;
     private javax.swing.JButton jBGuardar;
-    private javax.swing.JButton jBListarfecha;
     private javax.swing.JButton jBModificar;
     private javax.swing.JButton jBNuevo;
     private javax.swing.JButton jBuscar;
@@ -549,17 +671,18 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextField jTBuscarCodPack;
     private javax.swing.JTextField jTCodigo;
-    private javax.swing.JTable jTMasajistas;
     private javax.swing.JTextField jTMonto;
     private javax.swing.JTextArea jTPreferencias;
     private javax.swing.JTable jTablaSpa;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     // End of variables declaration//GEN-END:variables
 }

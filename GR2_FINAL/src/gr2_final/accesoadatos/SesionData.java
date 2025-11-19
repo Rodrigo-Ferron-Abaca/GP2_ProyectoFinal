@@ -307,4 +307,47 @@ public class SesionData {
         }
     }
 
+    public List<Sesion> listarSesionesPorPack(int codPack) {
+
+    List<Sesion> lista = new ArrayList<>();
+    String sql = "SELECT * FROM sesion WHERE codPack = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.setInt(1, codPack);
+        try (ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+
+                Sesion s = new Sesion();
+                s.setCodSesion(rs.getInt("codSesion"));
+                s.setFechaHoraInicio(rs.getTimestamp("fechaHoraInicio").toLocalDateTime());
+                s.setFechaHoraFin(rs.getTimestamp("fechaHoraFin").toLocalDateTime());
+                s.setEstado(rs.getBoolean("estado"));
+
+                int codTrat = rs.getInt("codTratam");
+                s.setCodigoTratam(new TratamientoData().buscarTratamiento(codTrat));
+
+                int codCons = rs.getInt("nroConsultorio");
+                s.setNroConsutorio(new ConsultorioData().buscarConsultorio(codCons));
+
+                int mat = rs.getInt("matricula");
+                s.setMatricula(new MasajistaData().buscarMasajista(mat));
+
+                s.setCodPack(new DiaDeSpaData().buscarDiaDeSpa(codPack));
+
+                lista.add(s);
+            }
+        }
+
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error al listar sesiones del pack: " + ex.getMessage());
+    }
+
+    return lista;
+}
+    
+    
+    
+    
 }
