@@ -59,9 +59,6 @@ public class TratamientoVista extends javax.swing.JInternalFrame {
 
     private void seleccionarDuracion() {
         jCDuracion.addItem("30");
-        jCDuracion.addItem("60");
-        jCDuracion.addItem("90");
-        jCDuracion.addItem("120");
     }
 
     private void limpiarTabla() {

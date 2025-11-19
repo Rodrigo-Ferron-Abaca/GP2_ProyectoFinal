@@ -89,7 +89,7 @@ public class DiaDeSpa {
 
     @Override
     public String toString() {
-        return "Pack" +codPack + " a $" + monto;
+        return "Pack" + codPack + " a $" + monto;
     }
 
 }

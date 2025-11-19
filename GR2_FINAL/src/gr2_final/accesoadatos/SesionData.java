@@ -55,7 +55,7 @@ public class SesionData {
 
         // Masajista
         sesion.setMatricula(masajistaData.buscarMasajista(rs.getInt("matricula")));
-        
+
         // Dia de SPA (pack)
         int codPack = rs.getInt("codPack");
         if (!rs.wasNull() && codPack > 0) {
@@ -106,7 +106,6 @@ public class SesionData {
     }
 
     //MODIFICAR SESIÓN
-     
     public void modificarSesion(Sesion sesion) {
 
         String sql = "UPDATE sesion SET fechaHoraInicio = ?, fechaHoraFin = ?, estado = ?, "
@@ -143,11 +142,10 @@ public class SesionData {
         }
     }
 
-    
     //BAJA LÓGICA 
     public void eliminarSesion(int codSesion) {
 
-        String sql = "UPDATE sesion SET estado = 0 WHERE codSesion = ?";
+        String sql = "DELETE FROM sesion WHERE codSesion = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -156,13 +154,13 @@ public class SesionData {
             int exito = ps.executeUpdate();
 
             if (exito == 1) {
-                JOptionPane.showMessageDialog(null, "Sesión anulada (baja lógica) con éxito.");
+                JOptionPane.showMessageDialog(null, "Sesión eliminada definitivamente.");
             } else {
-                JOptionPane.showMessageDialog(null, "No se encontró la Sesión para anular.");
+                JOptionPane.showMessageDialog(null, "No se encontró la sesión para eliminar.");
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al anular la Sesión: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al eliminar la sesión: " + ex.getMessage());
         }
     }
 
@@ -211,7 +209,7 @@ public class SesionData {
     }
 
     //LISTAR POR FRANJA *
-        public List<Sesion> listarSesionesPorFranja(LocalDate inicio, LocalDate fin) {
+    public List<Sesion> listarSesionesPorFranja(LocalDate inicio, LocalDate fin) {
 
         List<Sesion> sesiones = new ArrayList<>();
 
@@ -258,4 +256,55 @@ public class SesionData {
 
         return sesiones;
     }
+
+    public boolean masajistaDisponible(int matricula, LocalDateTime inicio, LocalDateTime fin, Integer codSesionActual) {
+
+        String sql = "SELECT * FROM sesion WHERE matricula = ? "
+                + "AND NOT (fechaHoraFin <= ? OR fechaHoraInicio >= ?)";
+
+        if (codSesionActual != null) {
+            sql += " AND codSesion <> " + codSesionActual;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, matricula);
+            ps.setTimestamp(2, Timestamp.valueOf(inicio));
+            ps.setTimestamp(3, Timestamp.valueOf(fin));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return !rs.next(); //true = disponible
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error validando disponibilidad de masajista: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    public boolean consultorioDisponible(int nroConsultorio, LocalDateTime inicio, LocalDateTime fin, Integer codSesionActual) {
+
+        String sql = "SELECT * FROM sesion WHERE nroConsultorio = ? "
+                + "AND NOT (fechaHoraFin <= ? OR fechaHoraInicio >= ?)";
+
+        if (codSesionActual != null) {
+            sql += " AND codSesion <> " + codSesionActual;
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, nroConsultorio);
+            ps.setTimestamp(2, Timestamp.valueOf(inicio));
+            ps.setTimestamp(3, Timestamp.valueOf(fin));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return !rs.next(); // true = disponible
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error validando disponibilidad de consultorio: " + ex.getMessage());
+            return false;
+        }
+    }
+
 }
