@@ -47,6 +47,8 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         cargarClientes();
         cargarHoras();
         cargarTablaGeneralSpa();
+        jTCodigo.setEditable(false);
+        jTMonto.setEditable(false);
 
         jCCliente.addActionListener(e -> recalcularMontoAutomatico());
 
@@ -136,30 +138,29 @@ public class DiaDeSpaVista extends javax.swing.JInternalFrame {
         }
     }
 
-private double calcularMontoDiaSpa(int codPack) {
+    private double calcularMontoDiaSpa(int codPack) {
 
-    SesionData sd = new SesionData();
-    List<Sesion> sesiones = sd.listarSesionesPorPack(codPack);
+        SesionData sd = new SesionData();
+        List<Sesion> sesiones = sd.listarSesionesPorPack(codPack);
 
-    double total = 0;
+        double total = 0;
 
-    for (Sesion s : sesiones) {
+        for (Sesion s : sesiones) {
 
-        long minutos = java.time.Duration.between(
-                s.getFechaHoraInicio(),
-                s.getFechaHoraFin()
-        ).toMinutes();
+            long minutos = java.time.Duration.between(
+                    s.getFechaHoraInicio(),
+                    s.getFechaHoraFin()
+            ).toMinutes();
 
-        int unidades = (int) Math.ceil(minutos / 30.0);
+            int unidades = (int) Math.ceil(minutos / 30.0);
 
-        double precio = s.getCodigoTratam().getCosto();
+            double precio = s.getCodigoTratam().getCosto();
 
-        total += unidades * precio;
+            total += unidades * precio;
+        }
+
+        return total;
     }
-
-    return total;
-}
-
 
     private void recalcularMontoAutomatico() {
 
@@ -397,10 +398,10 @@ private double calcularMontoDiaSpa(int codPack) {
                                     .addComponent(jLabel1)
                                     .addComponent(jTCodigo)
                                     .addComponent(jTMonto)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane1)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                                         .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jTBuscarCodPack))
                                 .addGap(60, 60, 60)
@@ -438,9 +439,9 @@ private double calcularMontoDiaSpa(int codPack) {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel4)
-                        .addComponent(jBModificar)
-                        .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jBModificar))
+                    .addComponent(jDChoserFechas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -493,7 +494,6 @@ private double calcularMontoDiaSpa(int codPack) {
             ds.setCodCli((Cliente) jCCliente.getSelectedItem());
             ds.setFechaHora(fechaHora);
             ds.setPreferencias(jTPreferencias.getText());
-            ds.setMonto(Double.parseDouble(jTMonto.getText()));
             ds.setEstado(true);
 
             dsData.guardarDiaDeSpa(ds);
@@ -644,10 +644,10 @@ private double calcularMontoDiaSpa(int codPack) {
 
     private void jBNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBNuevoActionPerformed
         jTCodigo.setEditable(false);
+        jTMonto.setEditable(false);
         jCCliente.setSelectedIndex(-1);
         jDChoserFechas.setDate(null);
         jCHora.setSelectedIndex(-1);
-        jTMonto.setText("");
         jTPreferencias.setText("");
         jBEliminar.setEnabled(false);
         jBModificar.setEnabled(false);

@@ -248,6 +248,12 @@ public class SesionVista extends javax.swing.JInternalFrame {
 
         jLabel8.setText("Consultorio");
 
+        jCDiadespa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCDiadespaActionPerformed(evt);
+            }
+        });
+
         jBNuevo.setText("Nuevo");
         jBNuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -804,6 +810,10 @@ public class SesionVista extends javax.swing.JInternalFrame {
     private void jBListarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBListarActionPerformed
         cargarTablaGeneral();
     }//GEN-LAST:event_jBListarActionPerformed
+
+    private void jCDiadespaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCDiadespaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCDiadespaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
